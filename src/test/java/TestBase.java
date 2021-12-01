@@ -6,18 +6,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class TestBase {
     WebDriver driver;
+    private static Logger logger = LoggerFactory.getLogger(TestBase.class);
 
     @BeforeAll
     static void setDriver() {
         WebDriverManager.chromedriver().setup();
+        logger.info("WebDriver initialized");
         FileHelper.createDirectory();
+        logger.info("Download files directory created");
     }
 
     @BeforeEach
@@ -29,11 +33,12 @@ public class TestBase {
         options.addArguments("--start-maximized");
         options.addArguments("--disable-popup-blocking");
         driver = new ChromeDriver(options);
+        logger.info("Driver initialized with additional options");
     }
 
     @AfterEach
-    void tearDown() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(1);
+    void tearDown() {
         driver.quit();
+        logger.info("Driver quit done properly");
     }
 }

@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -14,18 +17,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BasicForm extends TestBase {
+    private Logger logger = LoggerFactory.getLogger(BasicForm.class);
 
     @BeforeEach
     void setUp() {
         driver.get("https://seleniumui.moderntester.pl/form.php");
+        logger.info("Window opened");
     }
 
     @Test
     @DisplayName("Testing success message")
     @Tag("regression")
-    void fillForm() {
+    void validateCorrectFormFillMessage() {
         driver.findElement(By.cssSelector("#inputFirstName3")).sendKeys("Arkadiusz");
-        driver.findElement(By.cssSelector("#inputLastName3")).sendKeys("Mistrz");
+        driver.findElement(By.cssSelector("#inputLastName3")).sendKeys("Miszcz");
         driver.findElement(By.cssSelector("#inputEmail3")).sendKeys("mistrz@gmail.com");
         List<WebElement> gender = driver.findElements(By.cssSelector("[name=gridRadiosSex]"));
         gender.get(new Random().nextInt(3)).click();
@@ -40,29 +45,32 @@ public class BasicForm extends TestBase {
         driver.findElement(By.cssSelector(".btn-primary")).submit();
         String expectedMessage = driver.findElement(By.cssSelector("#validator-message")).getText();
         assertEquals("Form send with success", expectedMessage);
+        logger.info("Test validateCorrectFormFillMessage completed");
     }
 
     @Test
-    @DisplayName("Testing downloaded files")
+    @DisplayName("Testing download option")
     @Tag("regression")
     void downloadFile() {
         int filesQuantityBeforeDownload = FileHelper.getFilesQuantityFromDownloadDirectory();
         driver.findElement(By.cssSelector(".btn-secondary")).click();
+        logger.info("Download file button clicked");
         try {
             TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            int filesQuantityAfterDownload = FileHelper.getFilesQuantityFromDownloadDirectory();
-            assertEquals(filesQuantityBeforeDownload, filesQuantityAfterDownload - 1);
         }
+        int filesQuantityAfterDownload = FileHelper.getFilesQuantityFromDownloadDirectory();
+            assertEquals(filesQuantityBeforeDownload, filesQuantityAfterDownload - 1);
+        logger.info("Test downloadFile completed");
     }
 
     @Test
     @DisplayName("Testing download file name")
     @Tag("regression")
-    void checkDownloadedFileName() {
+    void validateDownloadedFileName() {
         FileHelper.getFilesQuantityFromDownloadDirectory();
         assertTrue(FileHelper.checkIfFileWithSpecificNameExist("test-file-to-download"));
+        logger.info("Test validateDownloadedFileName completed");
     }
 }
